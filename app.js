@@ -38,4 +38,16 @@ app.get("/", (req, res) => {
     res.render("index");
 });
 
+app.get("/about", (req, res) => {
+    res.render("about");
+})
+
+app.get("/login", (req, res) => {
+    res.render("login");
+})
+
+app.get("/orders", (req, res) => {
+    res.render("orders");
+})
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
