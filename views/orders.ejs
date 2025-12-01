@@ -21,23 +21,19 @@
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
                 <tr>
-                    <th>ID</th><th>Customer</th><th>Status</th><th>Actions</th>
+                    <th>OrderNumber</th><th>UserName</th><th>OrderDate</th><th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <% orders.forEach(order => { %>
+                <% Order.forEach(Order => { %>
                     <tr>
-                        <td><%= order.id %></td>
-                        <td><%= order.customer_name %></td>
+                        <td><%= Order.OrderNumber %></td>
+                        <td><%= Order.UserName %></td>
+                        <td><%= Order.OrderDate %></td>
                         <td>
-                            <span class="badge <%= order.status === 'Completed' ? 'text-bg-success' : 'text-bg-warning' %>">
-                                <%= order.status %>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="/editOrder/<%= order.id %>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="/editOrder/<%= Order.OrderNumber %>" class="btn btn-warning btn-sm">Edit</a>
                             
-                            <form action="/deleteOrder/<%= order.id %>" method="POST" style="display:inline;">
+                            <form action="/deleteOrder/<%= Order.OrderNumber %>" method="POST" style="display:inline;">
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
                             </form>
                         </td>

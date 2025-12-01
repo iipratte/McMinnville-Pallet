@@ -46,33 +46,33 @@ function checkAuth(req, res, next) {
 // ROOT ROUTE (Home + Pricing + Search)
 app.get("/", (req, res) => {
     // Start the query to get all pallets
-    let query = knex.select().from("pallets"); 
+    let query = knex.select().from("product"); 
 
     // REAL SEARCH LOGIC (SQL)
     if (req.query.search) {
-        query = query.where("type", "ilike", `%${req.query.search}%`)
-                     .orWhere("description", "ilike", `%${req.query.search}%`);
+        query = query.where("ProductName", "ilike", `%${req.query.search}%`)
+                     .orWhere("Material", "ilike", `%${req.query.search}%`);
     }
 
-    query.then(pallets => {
+    query.then(product => {
         // Render index and pass BOTH the data and the user (for the navbar)
         res.render("index", { 
-            pallets: pallets, 
+            product: product, 
             user: req.session.user 
         });
     }).catch(err => {
         console.log(err);
-        res.status(500).send("Error retrieving pallets from database.");
+        res.status(500).send("Error retrieving products from database.");
     });
 });
 
 // CONTACT FORM (Create Order)
 app.post("/contact", (req, res) => {
-    knex("orders").insert({
-        customer_name: req.body.customerName,
-        request_type: req.body.requestType,
-        quantity: req.body.quantity,
-        status: "Pending" // Default status
+    knex("order").insert({
+        OrderNumber: req.body.OrderNumber,
+        ProductName: req.body.ProductName,
+        QuotedPrice: req.body.QuotedPrice,
+        Quantity: req.body.Quantity
     }).then(() => {
         res.redirect("/");
     }).catch(err => {
@@ -103,9 +103,9 @@ app.get("/logout", (req, res) => {
 
 // ADMIN DASHBOARD (Read Orders)
 app.get("/orders", checkAuth, (req, res) => {
-    knex.select().from("orders").orderBy("id")
+    knex.select().from("order").orderBy("OrderNumber")
         .then(orders => {
-            res.render("orders", { orders: orders });
+            res.render("order", { orders: orders });
         }).catch(err => {
             console.log(err);
             res.status(500).send("Error loading orders.");
@@ -114,7 +114,7 @@ app.get("/orders", checkAuth, (req, res) => {
 
 // EDIT ORDER (Read One for Editing)
 app.get("/editOrder/:id", checkAuth, (req, res) => {
-    knex.select().from("orders").where("id", req.params.id).first()
+    knex.select().from("order").where("id", req.params.id).first()
         .then(order => {
             res.render("editOrder", { order: order });
         }).catch(err => {
@@ -125,10 +125,10 @@ app.get("/editOrder/:id", checkAuth, (req, res) => {
 
 // UPDATE ORDER (Update in DB)
 app.post("/editOrder/:id", checkAuth, (req, res) => {
-    knex("orders").where("id", req.params.id).update({
-        customer_name: req.body.customerName,
-        quantity: req.body.quantity,
-        status: req.body.status
+    knex("order").where("id", req.params.id).update({
+        ProductName: req.body.ProductName,
+        QuotedPrice: req.body.QuotedPrice,
+        Quantity: req.body.Quantity
     }).then(() => {
         res.redirect("/orders");
     }).catch(err => {
@@ -139,7 +139,7 @@ app.post("/editOrder/:id", checkAuth, (req, res) => {
 
 // DELETE ORDER (Delete from DB)
 app.post("/deleteOrder/:id", checkAuth, (req, res) => {
-    knex("orders").where("id", req.params.id).del()
+    knex("order").where("id", req.params.id).del()
         .then(() => {
             res.redirect("/orders");
         }).catch(err => {

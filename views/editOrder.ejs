@@ -11,20 +11,17 @@
         <form action="/editOrder/<%= order.id %>" method="POST">
             <div class="mb-3">
                 <label>Customer Name:</label>
-                <input type="text" name="customerName" class="form-control" value="<%= order.customer_name %>">
+                <input type="text" name="customerName" class="form-control" value="<%= order.ProductName %>">
+            </div>
+
+            <div class="mb-3">
+                <label>Quoted Price:</label>
+                <input type="number" name="quantity" class="form-control" value="<%= order.QuotedPrice %>">
             </div>
 
             <div class="mb-3">
                 <label>Quantity:</label>
-                <input type="number" name="quantity" class="form-control" value="<%= order.quantity %>">
-            </div>
-
-            <div class="mb-3">
-                <label>Status:</label>
-                <select name="status" class="form-select">
-                    <option value="Pending" <%= order.status == 'Pending' ? 'selected' : '' %>>Pending</option>
-                    <option value="Completed" <%= order.status == 'Completed' ? 'selected' : '' %>>Completed</option>
-                </select>
+                <input type="number" name="quantity" class="form-control" value="<%= order.Quantity %>">
             </div>
 
             <button type="submit" class="btn btn-primary">Update Order</button>

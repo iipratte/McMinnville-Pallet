@@ -55,23 +55,23 @@
                         <table class="table table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th class="ps-4">Pallet Type</th>
-                                    <th>Description</th>
-                                    <th class="fw-bold text-success">Price / Unit</th>
+                                    <th class="ps-4">Product Name</th>
+                                    <th>Material</th>
+                                    <th class="fw-bold text-success">Price</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% if(pallets.length > 0) { %>
-                                    <% pallets.forEach(p => { %>
+                                <% if(Products.length > 0) { %>
+                                    <% Products.forEach(P => { %>
                                         <tr>
-                                            <td class="ps-4 fw-bold text-dark"><%= p.type %></td>
-                                            <td class="text-muted"><%= p.description %></td>
-                                            <td class="fw-bold text-success">$<%= p.price.toFixed(2) %></td>
+                                            <td class="ps-4 fw-bold text-dark"><%= P.ProductName %></td>
+                                            <td class="text-muted"><%= P.Material %></td>
+                                            <td class="fw-bold text-success">$<%= P.Price %></td>
                                         </tr>
                                     <% }) %>
                                 <% } else { %>
                                     <tr>
-                                        <td colspan="3" class="text-center py-4">No pallets found matching your search.</td>
+                                        <td colspan="3" class="text-center py-4">No products found matching your search.</td>
                                     </tr>
                                 <% } %>
                             </tbody>
