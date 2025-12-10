@@ -30,7 +30,6 @@ const knex = require("knex")({
     }
 });
 
-// Middleware
 function checkAuth(req, res, next) {
     if (req.session.user) next();
     else res.redirect('/login');
@@ -40,45 +39,44 @@ function checkAuth(req, res, next) {
 
 // ROOT ROUTE (Pricing Page)
 app.get("/", (req, res) => {
-    // TRYING LOWERCASE TABLE & COLUMNS
+    // FIXED: Renamed aliases to match index.ejs (ProductName, Material, Price)
     let query = knex.select(
-        'productname as type',    // Changed ProductName -> productname
-        'material as description', // Changed Material -> material
-        'price as price'           // Changed Price -> price
-    ).from("product");             // Changed Product -> product
+        'productname as ProductName', 
+        'material as Material', 
+        'price as Price'
+    ).from("product"); 
 
     if (req.query.search) {
         query = query.where("productname", "ilike", `%${req.query.search}%`);
     }
 
     query.then(pallets => {
-        // FIXED: Changed 'pallets' to 'Products' to match index.ejs variable
+        // Sends 'Products' (Capital P) to match the View
         res.render("index", { Products: pallets, user: req.session.user });
     }).catch(err => {
-        console.log("THE REAL ERROR IS HERE:", err);
-        res.status(500).send("Error retrieving products. Check Terminal for details.");
+        console.log(err);
+        res.status(500).send("Error retrieving products.");
     });
 });
 
-// CONTACT FORM (Create Order)
+// CONTACT FORM
 app.post("/contact", (req, res) => {
     knex("order").insert({
-        UserName: req.body.customerName, // Matches form input 'customerName'
-        ProductName: req.body.requestType, // Matches form input 'requestType'
+        UserName: req.body.customerName,
+        // Note: These columns must exist in your 'order' table!
+        ProductName: req.body.requestType, 
         QuotedPrice: 0.00,
-        Quantity: req.body.quantity      // Matches form input 'quantity'
+        Quantity: req.body.quantity 
     }).then(() => {
         res.redirect("/");
     }).catch(err => {
         console.log(err);
-        res.status(500).send("Error submitting request.");
+        res.status(500).send("Error submitting request. Check if columns exist in DB.");
     });
 });
 
-// LOGIN (Simple Admin)
-app.get("/login", (req, res) => {
-    res.render("login");
-});
+// LOGIN
+app.get("/login", (req, res) => { res.render("login"); });
 
 app.post("/login", (req, res) => {
     if (req.body.username === "admin" && req.body.password === "password123") {
@@ -94,20 +92,17 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-// ADMIN DASHBOARD (Read Orders)
+// DASHBOARD
 app.get("/orders", checkAuth, (req, res) => {
-    // ERD MAPPING: 'order' Table
     knex.select('OrderNumber as id', 'UserName as customer_name', 'ShipDate')
-        .from("order") // FIXED: Lowercase 'order'
+        .from("order")
         .orderBy("OrderNumber")
         .then(rows => {
-            // Transform Data for View: If ShipDate is null, Status = Pending
             const orders = rows.map(o => ({
                 id: o.id,
                 customer_name: o.customer_name,
                 status: o.ShipDate ? "Completed" : "Pending"
             }));
-            
             res.render("orders", { orders: orders });
         }).catch(err => {
             console.log(err);
@@ -115,42 +110,39 @@ app.get("/orders", checkAuth, (req, res) => {
         });
 });
 
-// EDIT ORDER (Show Form)
+// EDIT ORDER (Get)
 app.get("/editOrder/:id", checkAuth, (req, res) => {
-    // FIXED: Added ProductName, QuotedPrice, Quantity to selection
-    knex.select('OrderNumber as id', 'UserName as customer_name', 'ShipDate', 'ProductName', 'QuotedPrice', 'Quantity')
-        .from("order") // FIXED: Lowercase 'order'
+    // Note: This tries to grab Product/Price/Quantity from 'order' table.
+    knex.select('*')
+        .from("order")
         .where("OrderNumber", req.params.id)
         .first()
         .then(row => {
-            // Transform for the View
             const order = {
-                id: row.id,
-                customer_name: row.customer_name,
-                ProductName: row.ProductName, // Added
-                QuotedPrice: row.QuotedPrice, // Added
-                Quantity: row.Quantity,       // Added
+                id: row.OrderNumber,
+                customer_name: row.UserName,
+                ProductName: row.ProductName,
+                QuotedPrice: row.QuotedPrice, 
+                Quantity: row.Quantity, 
                 status: row.ShipDate ? "Completed" : "Pending"
             };
             res.render("editOrder", { order: order });
         }).catch(err => {
             console.log(err);
-            res.status(500).send("Error loading order for edit.");
+            res.status(500).send("Error loading order.");
         });
 });
 
-// EDIT ORDER (Update DB)
+// EDIT ORDER (Post)
 app.post("/editOrder/:id", checkAuth, (req, res) => {
-    // LOGIC: If user chose "Completed", set ShipDate to today. If "Pending", set NULL.
     const newShipDate = req.body.status === "Completed" ? new Date() : null;
-
-    knex("order") // FIXED: Lowercase 'order'
+    knex("order")
         .where("OrderNumber", req.params.id)
         .update({
             UserName: req.body.customerName,
-            ProductName: req.body.productName, // FIXED: Now updates Product
-            QuotedPrice: req.body.quotedPrice, // FIXED: Now updates Price
-            Quantity: req.body.quantity,       // FIXED: Now updates Quantity
+            ProductName: req.body.productName,
+            QuotedPrice: req.body.quotedPrice,
+            Quantity: req.body.quantity,
             ShipDate: newShipDate
         }).then(() => {
             res.redirect("/orders");
@@ -160,9 +152,9 @@ app.post("/editOrder/:id", checkAuth, (req, res) => {
         });
 });
 
-// DELETE ORDER
+// DELETE
 app.post("/deleteOrder/:id", checkAuth, (req, res) => {
-    knex("order").where("OrderNumber", req.params.id).del() // FIXED: Lowercase 'order'
+    knex("order").where("OrderNumber", req.params.id).del()
         .then(() => {
             res.redirect("/orders");
         }).catch(err => {
@@ -171,4 +163,4 @@ app.post("/deleteOrder/:id", checkAuth, (req, res) => {
         });
 });
 
-app.listen(port, () => console.log(`Production Server running on port ${port}`));
+app.listen(port, () => console.log(`Server running on port ${port}`));
