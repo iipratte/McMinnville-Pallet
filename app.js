@@ -1,11 +1,16 @@
 require('dotenv').config();
+require('dotenv').config();
 const express = require("express");
 const session = require("express-session");
+const path = require("path");
 const path = require("path");
 const app = express();
 
 const port = process.env.PORT || 3000;
 
+const port = process.env.PORT || 3000;
+
+// --- 1. SETUP ---
 // --- 1. SETUP ---
 app.set("view engine", "ejs");
 app.use(express.static('public')); 
@@ -61,6 +66,7 @@ app.get("/", (req, res) => {
 });
 
 // CONTACT FORM (Create Order)
+// CONTACT FORM (Create Order)
 app.post("/contact", (req, res) => {
     knex("order").insert({
         UserName: req.body.customerName, // Matches form input 'customerName'
@@ -82,6 +88,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     if (req.body.username === "admin" && req.body.password === "password123") {
+        req.session.user = "admin";
         req.session.user = "admin";
         res.redirect("/orders");
     } else {

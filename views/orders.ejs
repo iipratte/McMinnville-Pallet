@@ -1,46 +1,624 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - McMinnville Pallet Co.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-top {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 0;
+        }
+        
+        .header-contact {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+        
+        .admin-badge {
+            background: #ff6b35;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #ff6b35;
+        }
+        
+        .page-header h2 {
+            color: #1e3a5f;
+            font-size: 2em;
+            margin: 0;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c5282;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            text-transform: uppercase;
+        }
+        
+        /* Table Container */
+        .table-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .table-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            width: 250px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #2c5282;
+        }
+        
+        .btn-search {
+            background: #2c5282;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn-search:hover {
+            background: #1e3a5f;
+        }
+        
+        /* Table Styles */
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .custom-table thead {
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            color: white;
+        }
+        
+        .custom-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .custom-table th:first-child {
+            border-radius: 8px 0 0 0;
+        }
+        
+        .custom-table th:last-child {
+            border-radius: 0 8px 0 0;
+        }
+        
+        .custom-table tbody tr {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        
+        .custom-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .custom-table td {
+            padding: 15px;
+            color: #333;
+        }
+        
+        .order-number {
+            font-weight: 600;
+            color: #2c5282;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-edit:hover {
+            background: #ffb300;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+        
+        .btn-header {
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-outline-light {
+            background: transparent;
+            color: white;
+        }
+        
+        .btn-outline-light:hover {
+            background: white;
+            color: #2c5282;
+        }
+        
+        .btn-danger-header {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        
+        .btn-danger-header:hover {
+            background: #c82333;
+            border-color: #c82333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        /* Footer */
+        footer {
+            background: #1e3a5f;
+            color: white;
+            padding: 30px 20px;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            color: #ccc;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .header-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .header-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .search-input {
+                flex: 1;
+            }
+            
+            .custom-table {
+                font-size: 0.9em;
+            }
+            
+            .custom-table th,
+            .custom-table td {
+                padding: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-contact {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <span class="navbar-brand">Admin Dashboard</span>
-            <div>
-                <a href="/" class="btn btn-outline-light btn-sm">View Public Site</a>
-                <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <div class="header-contact">
+                <div>
+                    <span class="admin-badge">ADMIN PANEL</span>
+                </div>
+                <div class="header-actions">
+                    <a href="/" class="btn-header btn-outline-light">View Public Site</a>
+                    <a href="/logout" class="btn-header btn-danger-header">Logout</a>
+                </div>
             </div>
         </div>
-    </nav>
+        <div class="header-main">
+            <a href="/" class="logo">McMinnville Pallet Co.</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Homepage</a></li>
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/orders" class="active">Orders</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <div class="container mt-5">
-        <h2>Order Management</h2>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h2>Order Management</h2>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Total Orders</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+        </div>
         
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>OrderNumber</th><th>UserName</th><th>OrderDate</th><th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% Order.forEach(Order => { %>
-                    <tr>
-                        <td><%= Order.OrderNumber %></td>
-                        <td><%= Order.UserName %></td>
-                        <td><%= Order.OrderDate %></td>
-                        <td>
-                            <a href="/editOrder/<%= Order.OrderNumber %>" class="btn btn-warning btn-sm">Edit</a>
-                            
-                            <form action="/deleteOrder/<%= Order.OrderNumber %>" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">All Orders</div>
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Search orders..." id="searchInput">
+                    <button class="btn-search" onclick="filterTable()">Search</button>
+                </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table class="custom-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Customer Name</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample Data Row 1 -->
+                        <tr>
+                            <td><span class="order-number">#ORD-1001</span></td>
+                            <td>Acme Corporation</td>
+                            <td>Dec 5, 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/1001" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/1001" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 2 -->
+                        <tr>
+                            <td><span class="order-number">#ORD-1002</span></td>
+                            <td>Pacific Lumber Co.</td>
+                            <td>Dec 6, 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/1002" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/1002" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 3 -->
+                        <tr>
+                            <td><span class="order-number">#ORD-1003</span></td>
+                            <td>Northwest Distribution</td>
+                            <td>Dec 7, 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/1003" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/1003" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 4 -->
+                        <tr>
+                            <td><span class="order-number">#ORD-1004</span></td>
+                            <td>Valley Vineyards</td>
+                            <td>Dec 8, 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/1004" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/1004" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Sample Data Row 5 -->
+                        <tr>
+                            <td><span class="order-number">#ORD-1005</span></td>
+                            <td>Mountain Supply Inc.</td>
+                            <td>Dec 9, 2024</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/1005" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/1005" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- EJS Template (keep this for your backend) -->
+                        <!-- <% Order.forEach(Order => { %>
+                        <tr>
+                            <td><span class="order-number">#<%= Order.OrderNumber %></span></td>
+                            <td><%= Order.UserName %></td>
+                            <td><%= Order.OrderDate %></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="/editOrder/<%= Order.OrderNumber %>" class="btn-edit">Edit</a>
+                                    <form action="/deleteOrder/<%= Order.OrderNumber %>" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %> -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 McMinnville Pallet Co. All rights reserved. | Admin Dashboard</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search/Filter functionality
+        function filterTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('ordersTable');
+            const rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let found = false;
+                
+                for (let j = 0; j < cells.length - 1; j++) {
+                    if (cells[j]) {
+                        const textValue = cells[j].textContent || cells[j].innerText;
+                        if (textValue.toLowerCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+        
+        // Allow Enter key to trigger search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterTable();
+            }
+        });
+        
+        // Real-time search
+        document.getElementById('searchInput').addEventListener('input', function() {
+            filterTable();
+        });
+    </script>
 </body>
 </html>
