@@ -12,7 +12,7 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: #ffffff;
+    color: #333;
     background-color: #f8f9fa;
 }
 
@@ -221,7 +221,7 @@ nav a.active {
 .about-content p {
     font-size: 1.1em;
     line-height: 1.8;
-    color: #f4f1f1;
+    color: #555;
     margin-bottom: 20px;
 }
 
@@ -243,7 +243,7 @@ nav a.active {
 .history-section p {
     font-size: 1.1em;
     line-height: 1.8;
-    color: #fcf9f9;
+    color: #555;
     margin-bottom: 20px;
 }
 
@@ -504,7 +504,7 @@ nav a.active {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #fbfafa;
+    color: #666;
     cursor: pointer;
     padding: 5px;
     font-size: 1.2em;
@@ -582,9 +582,14 @@ footer a:hover {
     max-width: 1200px;
     margin: 0 auto;
     padding-top: 30px;
-    border-top: 1px solid rgb(255, 255, 255);
+    border-top: 1px solid rgba(255,255,255,0.2);
     text-align: center;
     color: #e8e8e8;
+}
+
+/* Override Bootstrap's text-muted class in footer */
+footer .text-muted {
+    color: #ffffff !important;
 }
 
 /* ===========================
@@ -688,7 +693,7 @@ footer a:hover {
 
 .stat-label {
     font-size: 0.85em;
-    color: #f9f7f7;
+    color: #666;
     text-transform: uppercase;
 }
 
