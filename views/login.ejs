@@ -1,24 +1,435 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - McMinnville Pallet Co.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header Styles */
+        header {
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header-top {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 0;
+        }
+        
+        .header-contact {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 30px;
+            font-size: 0.9em;
+        }
+        
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Login Container */
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 450px;
+            overflow: hidden;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #2c5282 0%, #1e3a5f 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .login-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 2em;
+            font-weight: 600;
+        }
+        
+        .login-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .login-subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95em;
+            margin: 0;
+        }
+        
+        .login-body {
+            padding: 40px 35px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #1e3a5f;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-control {
+            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            font-size: 1em;
+            border-radius: 8px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #2c5282;
+            box-shadow: 0 0 0 0.2rem rgba(44, 82, 130, 0.15);
+            outline: none;
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.2em;
+        }
+        
+        .toggle-password:hover {
+            color: #2c5282;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8555 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .btn-login:hover {
+            background: linear-gradient(135deg, #ff5722 0%, #ff6b35 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .back-link {
+            color: #2c5282;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #ff6b35;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+        
+        .form-check-label {
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .forgot-link {
+            color: #2c5282;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .forgot-link:hover {
+            color: #ff6b35;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 20px;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+        }
+        
+        /* Alert Message */
+        .alert-message {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert-message.show {
+            display: block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-main {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .login-body {
+                padding: 30px 25px;
+            }
+            
+            .login-header {
+                padding: 30px 20px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5" style="max-width: 400px;">
-        <h2>Admin Login</h2>
-        <form action="/login" method="POST">
-            <div class="mb-3">
-                <label>Username:</label>
-                <input type="text" name="username" class="form-control">
+    <!-- Header -->
+    <header>
+        <div class="header-top">
+            <div class="header-contact">
+                <span>Phone: (503) 555-0123</span>
+                <span>Email: info@mcminnvillepallet.com</span>
             </div>
-            <div class="mb-3">
-                <label>Password:</label>
-                <input type="password" name="password" class="form-control">
+        </div>
+        <div class="header-main">
+            <a href="/" class="logo">McMinnville Pallet Co.</a>
+            <nav>
+                <ul>
+                    <li><a href="/">Homepage</a></li>
+                    <li><a href="/login" class="active">Login</a></li>
+                    <li><a href="/orders">Orders</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Admin Login</h2>
+                <p class="login-subtitle">Enter your credentials to access the system</p>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-        <a href="/" class="btn btn-link mt-3">Back to Home</a>
+            
+            <div class="login-body">
+                <div class="alert-message" id="errorMessage">
+                    Invalid username or password. Please try again.
+                </div>
+                
+                <form action="/login" method="POST" id="loginForm">
+                    <div class="mb-4">
+                        <label class="form-label">
+                            Username
+                        </label>
+                        <input type="text" 
+                               name="username" 
+                               class="form-control" 
+                               placeholder="Enter your username"
+                               required
+                               autocomplete="username">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" 
+                                   name="password" 
+                                   id="password"
+                                   class="form-control" 
+                                   placeholder="Enter your password"
+                                   required
+                                   autocomplete="current-password">
+                            <button type="button" class="toggle-password" onclick="togglePassword()">
+                                <span id="toggleIcon">👁</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        Login to Dashboard
+                    </button>
+                </form>
+                
+                <div class="form-footer">
+                    <a href="/" class="back-link">
+                        &larr; Back to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 McMinnville Pallet Co. All rights reserved. | Secure Admin Access</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = '👁';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = '👁';
+            }
+        }
+        
+        // Form validation
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const username = document.querySelector('input[name="username"]').value.trim();
+            const password = document.querySelector('input[name="password"]').value;
+            
+            if (!username || !password) {
+                e.preventDefault();
+                document.getElementById('errorMessage').classList.add('show');
+                document.getElementById('errorMessage').textContent = 'Please fill in all fields.';
+            }
+        });
+        
+        // Hide error message when user starts typing
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                document.getElementById('errorMessage').classList.remove('show');
+            });
+        });
+    </script>
 </body>
 </html>
