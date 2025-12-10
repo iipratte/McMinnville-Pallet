@@ -633,3 +633,148 @@ footer a:hover {
         padding: 10px;
     }
 }
+
+/* ===========================
+   DASHBOARD SPECIFIC STYLES
+   =========================== */
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-header {
+    padding: 8px 16px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    color: white;
+}
+
+.btn-header:hover {
+    background: white;
+    color: #1e3a5f;
+    border-color: white;
+}
+
+.btn-danger-header {
+    background: rgba(220, 53, 69, 0.8);
+    border-color: transparent;
+}
+
+.btn-danger-header:hover {
+    background: #c82333;
+    color: white;
+}
+
+/* Dashboard Stats (Top Cards) */
+.header-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #2c5282;
+}
+
+.stat-label {
+    font-size: 0.85em;
+    color: #666;
+    text-transform: uppercase;
+}
+
+/* Dashboard Table Header */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.table-title {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #1e3a5f;
+}
+
+/* Search Box */
+.search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    padding: 8px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    width: 250px;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #2c5282;
+}
+
+.btn-search {
+    background: #2c5282;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-search:hover {
+    background: #1e3a5f;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Responsive Dashboard */
+@media (max-width: 992px) {
+    .page-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .header-stats {
+        width: 100%;
+        justify-content: space-around;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .search-box {
+        width: 100%;
+    }
+    
+    .search-input {
+        flex: 1;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}
