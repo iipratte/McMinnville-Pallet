@@ -504,7 +504,7 @@ nav a.active {
     transform: translateY(-50%);
     background: none;
     border: none;
-    color: #666;
+    color: #fbfafa;
     cursor: pointer;
     padding: 5px;
     font-size: 1.2em;
@@ -582,7 +582,7 @@ footer a:hover {
     max-width: 1200px;
     margin: 0 auto;
     padding-top: 30px;
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid rgb(255, 255, 255);
     text-align: center;
     color: #e8e8e8;
 }
@@ -688,7 +688,7 @@ footer a:hover {
 
 .stat-label {
     font-size: 0.85em;
-    color: #666;
+    color: #f9f7f7;
     text-transform: uppercase;
 }
 
