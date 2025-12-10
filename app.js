@@ -81,16 +81,38 @@ app.post("/contact", (req, res) => {
     });
 });
 
-// --- LOGIN ---
-app.get("/login", (req, res) => { res.render("login"); });
-
-app.post("/login", (req, res) => {
-    if (req.body.username === "admin" && req.body.password === "password123") {
-        req.session.user = "admin";
-        res.redirect("/orders");
-    } else {
-        res.redirect("/login");
+// --- LOGIN (GET) ---
+app.get("/login", (req, res) => {
+    // If already logged in, send to dashboard
+    if (req.session.user) {
+        return res.redirect("/orders");
     }
+    res.render("login");
+});
+
+// --- LOGIN (POST) ---
+app.post("/login", (req, res) => {
+    const { username, password } = req.body;
+
+    // Query the database for the user
+    knex("users")
+        .where({ UserName: username })
+        .first()
+        .then(user => {
+            // Check if user exists AND password matches
+            if (user && user.Password === password) {
+                req.session.user = user; // Save the user session
+                res.redirect("/orders");
+            } else {
+                // Login failed
+                console.log("Login failed: Invalid credentials");
+                res.redirect("/login"); // Optional: Add ?error=true to show message
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send("An error occurred during login.");
+        });
 });
 
 app.get("/logout", (req, res) => {
@@ -100,12 +122,13 @@ app.get("/logout", (req, res) => {
 
 // --- DASHBOARD ---
 app.get("/orders", checkAuth, (req, res) => {
-    knex.select('*').from("order").orderBy("ordernumber")
+    // UPDATED: Changed "order" to "orders" to match ERD
+    knex.select('*').from("orders").orderBy("OrderNumber") 
         .then(rows => {
             const orders = rows.map(o => ({
-                id: o.ordernumber,       // Map database 'ordernumber' to 'id'
-                customer_name: o.username, // Map database 'username' to 'customer_name'
-                status: o.shipdate ? "Completed" : "Pending"
+                id: o.OrderNumber,       // specific case from ERD
+                customer_name: o.UserName, 
+                status: o.ShipDate ? "Completed" : "Pending"
             }));
             res.render("orders", { orders: orders });
         }).catch(err => {
@@ -116,7 +139,7 @@ app.get("/orders", checkAuth, (req, res) => {
 
 // --- EDIT ORDER (GET) ---
 app.get("/editOrder/:id", checkAuth, (req, res) => {
-    knex.select('*').from("order").where("ordernumber", req.params.id).first()
+    knex.select('*').from("orders").where("ordernumber", req.params.id).first()
         .then(row => {
             const order = {
                 id: row.ordernumber,
@@ -137,7 +160,7 @@ app.get("/editOrder/:id", checkAuth, (req, res) => {
 app.post("/editOrder/:id", checkAuth, (req, res) => {
     const newShipDate = req.body.status === "Completed" ? new Date() : null;
     
-    knex("order").where("ordernumber", req.params.id)
+    knex("orders").where("ordernumber", req.params.id)
         .update({
             username: req.body.customerName,
             productname: req.body.productName,
@@ -154,7 +177,7 @@ app.post("/editOrder/:id", checkAuth, (req, res) => {
 
 // --- DELETE ORDER ---
 app.post("/deleteOrder/:id", checkAuth, (req, res) => {
-    knex("order").where("ordernumber", req.params.id).del()
+    knex("orders").where("ordernumber", req.params.id).del()
         .then(() => {
             res.redirect("/orders");
         }).catch(err => {
