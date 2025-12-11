@@ -33,31 +33,42 @@ const knex = require("knex")({
     }
 });
 
-// Middleware to check if user is logged in
+// Middleware to check if user is logged in (AUTHENTICATION)
 function checkAuth(req, res, next) {
     if (req.session.user) next();
     else res.redirect('/login');
+}
+
+// NEW Middleware to check if user is a Manager (AUTHORIZATION: Level 'M')
+function checkManagerAuth(req, res, next) {
+    // Check if the user is authenticated AND their level is 'M'
+    if (req.session.user && req.session.user.Level === 'M') {
+        next();
+    } else {
+        // Redirect or send an error if not authorized
+        res.status(403).send("Error 403: Forbidden. You do not have manager access to this page.");
+    }
 }
 
 // ==========================================
 // 3. ROUTES
 // ==========================================
 
-// --- HOME PAGE (Pricing) ---
+// --- HOME PAGE (Pricing and Product Listing) ---
 app.get("/", (req, res) => {
-    // CLEANER: Just select everything. 
-    // We assume the DB columns are: productname, material, price (lowercase)
     let query = knex.select('*').from("product"); 
+    let searchTerm = req.query.search || '';
 
-    if (req.query.search) {
-        query = query.where("productname", "ilike", `%${req.query.search}%`);
+    if (searchTerm) {
+        // Search by Product Name using case-insensitive 'ilike'
+        query = query.where("ProductName", "ilike", `%${searchTerm}%`);
     }
 
     query.then(pallets => {
-        // Send the raw database results to the page
         res.render("index", { 
-            products: pallets,      // Changed to lowercase 'products'
-            user: req.session.user 
+            products: pallets, 
+            user: req.session.user,
+            searchTerm: searchTerm
         });
     }).catch(err => {
         console.log(err);
@@ -67,11 +78,12 @@ app.get("/", (req, res) => {
 
 // --- CONTACT FORM ---
 app.post("/contact", (req, res) => {
-    // Insert using standard DB column names
+    // Note: This route uses 'order' table. If this table should map to 'orders' 
+    // and 'order_detail' in the ERD, this logic might need refinement later.
     knex("order").insert({
-        username: req.body.customerName,   
+        username: req.body.customerName,   
         productname: req.body.requestType, 
-        quotedprice: 0.00,                 
+        quotedprice: 0.00,                 
         quantity: req.body.quantity 
     }).then(() => {
         res.redirect("/");
@@ -81,44 +93,129 @@ app.post("/contact", (req, res) => {
     });
 });
 
-// --- LOGIN (GET) ---
-app.get("/login", (req, res) => {
-    // If already logged in, send to dashboard
+// ----------------------------------------
+// --- LOGIN ROUTES (Updated for DB Check) ---
+// ----------------------------------------
+app.get("/login", (req, res) => { 
     if (req.session.user) {
         return res.redirect("/orders");
     }
-    res.render("login");
+    res.render("login"); 
 });
 
-// --- LOGIN (POST) ---
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
 
-    // Query the database for the user
+    // Query the database for the user by UserName
     knex("users")
         .where({ UserName: username })
         .first()
         .then(user => {
             // Check if user exists AND password matches
             if (user && user.Password === password) {
-                req.session.user = user; // Save the user session
+                // IMPORTANT: Save the entire user object (including Level) to session
+                req.session.user = user; 
                 res.redirect("/orders");
             } else {
-                // Login failed
                 console.log("Login failed: Invalid credentials");
-                res.redirect("/login"); // Optional: Add ?error=true to show message
+                // Optional: Pass an error message to the login page
+                res.redirect("/login"); 
             }
         })
         .catch(err => {
-            console.log(err);
+            console.error(err);
             res.status(500).send("An error occurred during login.");
         });
 });
 
 app.get("/logout", (req, res) => {
-    req.session.destroy();
-    res.redirect("/");
+    req.session.destroy(err => {
+        if (err) console.error("Error destroying session:", err);
+        res.redirect("/");
+    });
 });
+
+// ----------------------------------------
+// --- PRODUCT MANAGEMENT (Manager Only) ---
+// ----------------------------------------
+
+// --- ADD PRODUCT (GET) ---
+app.get("/addProduct", checkManagerAuth, (req, res) => {
+    res.render("addProduct", { user: req.session.user });
+});
+
+// --- ADD PRODUCT (POST) ---
+app.post("/addProduct", checkManagerAuth, (req, res) => {
+    const { productName, price, heatTreat, way } = req.body;
+    
+    knex('product').insert({
+        ProductName: productName,
+        Price: price,
+        HeatTreat: heatTreat,
+        Way: way
+    })
+    .then(() => {
+        res.redirect('/');
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(500).send("Error adding product.");
+    });
+});
+
+// --- EDIT PRODUCT (GET) ---
+app.get("/editProduct/:id", checkManagerAuth, (req, res) => {
+    knex('product')
+        .where('ProductID', req.params.id)
+        .first()
+        .then(product => {
+            if (!product) return res.status(404).send("Product not found.");
+            res.render('editProduct', { product: product, user: req.session.user });
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send("Error loading product for edit.");
+        });
+});
+
+// --- EDIT PRODUCT (POST) ---
+app.post("/editProduct/:id", checkManagerAuth, (req, res) => {
+    const { productName, price, heatTreat, way } = req.body;
+    
+    knex('product')
+        .where('ProductID', req.params.id)
+        .update({
+            ProductName: productName,
+            Price: price,
+            HeatTreat: heatTreat,
+            Way: way
+        })
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send("Error updating product.");
+        });
+});
+
+// --- DELETE PRODUCT (POST) ---
+app.post("/deleteProduct/:id", checkManagerAuth, (req, res) => {
+    knex('product')
+        .where('ProductID', req.params.id)
+        .del()
+        .then(() => {
+            res.redirect('/');
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(500).send("Error deleting product.");
+        });
+});
+
+// ----------------------------------------
+// --- DASHBOARD AND ORDER MANAGEMENT ---
+// ----------------------------------------
 
 // --- DASHBOARD ---
 app.get("/orders", checkAuth, (req, res) => {
@@ -232,6 +329,11 @@ app.post("/deleteOrder/:id", checkAuth, async (req, res) => {
         console.log(err);
         res.status(500).send("Error deleting order.");
     }
+});
+
+// --- About route --
+app.get("/about", (req, res) => {
+    res.render("about", { user: req.session.user });
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));

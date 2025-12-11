@@ -11,30 +11,8 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class="header-contact">
-                <div>
-                    <!-- Header with links to other pages -->
-                    <span class="admin-badge">ADMIN PANEL</span>
-                </div>
-                <div class="header-actions">
-                    <a href="/" class="btn-header">View Public Site</a>
-                    <a href="/logout" class="btn-header btn-danger-header">Logout</a>
-                </div>
-            </div>
-        </div>
-        <div class="header-main">
-            <a href="/" class="logo">McMinnville Pallet Co.</a>
-            <nav>
-                <ul>
-                    <li><a href="/">Homepage</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/orders" class="active">Orders</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<!-- Header -->
+<%- include('partials/header', { page: 'orders' }) %>
 
     <div class="main-content">
         <div class="page-header">
@@ -105,12 +83,8 @@
         </div>
     </div>
 
-    <footer>
-        <div class="footer-content">
-            <!-- Footer with copywright -->
-            <p>&copy; 2025 McMinnville Pallet Co. All rights reserved. | Admin Dashboard</p>
-        </div>
-    </footer>
+    <!-- Footer -->
+    <%- include('partials/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
