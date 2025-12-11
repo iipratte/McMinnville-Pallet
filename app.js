@@ -122,15 +122,33 @@ app.get("/logout", (req, res) => {
 
 // --- DASHBOARD ---
 app.get("/orders", checkAuth, (req, res) => {
-    // UPDATED: Changed "order" to "orders" to match ERD
-    knex.select('*').from("orders").orderBy("OrderNumber") 
+    knex('orders')
+        .select('OrderNumber', 'UserName', 'ShipDate')
+        .orderBy("OrderNumber", "asc")
         .then(rows => {
+            // 1. Process the raw database rows
             const orders = rows.map(o => ({
-                id: o.OrderNumber,       // specific case from ERD
-                customer_name: o.UserName, 
+                id: o.OrderNumber,
+                customer_name: o.UserName,
                 status: o.ShipDate ? "Completed" : "Pending"
             }));
-            res.render("orders", { orders: orders });
+
+            // 2. Calculate the statistics
+            const totalOrders = orders.length;
+            // FIXED: changed .filterWH to .filter
+            const completedCount = orders.filter(o => o.status === "Completed").length;
+            const activeCount = totalOrders - completedCount;
+
+            // 3. Render the page with the 'stats' object included
+            res.render("orders", { 
+                orders: orders, 
+                user: req.session.user,
+                stats: {
+                    total: totalOrders,
+                    active: activeCount,
+                    completed: completedCount
+                }
+            });
         }).catch(err => {
             console.log(err);
             res.status(500).send("Error loading orders.");
@@ -139,17 +157,30 @@ app.get("/orders", checkAuth, (req, res) => {
 
 // --- EDIT ORDER (GET) ---
 app.get("/editOrder/:id", checkAuth, (req, res) => {
-    knex.select('*').from("orders").where("ordernumber", req.params.id).first()
+    knex('orders')
+        .join('order_detail', 'orders.OrderNumber', '=', 'order_detail.OrderNumber')
+        .select(
+            'orders.OrderNumber',
+            'orders.UserName',
+            'orders.ShipDate',
+            'order_detail.ProductName', // This column is in order_detail
+            'order_detail.QuotedPrice', // This column is in order_detail
+            'order_detail.Quantity'     // This column is in order_detail
+        )
+        .where('orders.OrderNumber', req.params.id)
+        .first()
         .then(row => {
+            if (!row) return res.status(404).send("Order not found");
+            
             const order = {
-                id: row.ordernumber,
-                customer_name: row.username,
-                productname: row.productname, // lowercase from DB
-                quotedprice: row.quotedprice, // lowercase from DB
-                quantity: row.quantity,       // lowercase from DB
-                status: row.shipdate ? "Completed" : "Pending"
+                id: row.OrderNumber,
+                customer_name: row.UserName,
+                ProductName: row.ProductName,
+                QuotedPrice: row.QuotedPrice,
+                Quantity: row.Quantity,
+                status: row.ShipDate ? "Completed" : "Pending"
             };
-            res.render("editOrder", { order: order });
+            res.render("editOrder", { order: order, user: req.session.user });
         }).catch(err => {
             console.log(err);
             res.status(500).send("Error loading order.");
@@ -157,33 +188,50 @@ app.get("/editOrder/:id", checkAuth, (req, res) => {
 });
 
 // --- EDIT ORDER (POST) ---
-app.post("/editOrder/:id", checkAuth, (req, res) => {
+app.post("/editOrder/:id", checkAuth, async (req, res) => {
     const newShipDate = req.body.status === "Completed" ? new Date() : null;
-    
-    knex("orders").where("ordernumber", req.params.id)
-        .update({
-            username: req.body.customerName,
-            productname: req.body.productName,
-            quotedprice: req.body.quotedPrice,
-            quantity: req.body.quantity,
-            shipdate: newShipDate
-        }).then(() => {
-            res.redirect("/orders");
-        }).catch(err => {
-            console.log(err);
-            res.status(500).send("Error updating order.");
-        });
+    const orderId = req.params.id;
+
+    try {
+        // 1. Update the 'orders' table (Customer & Status)
+        await knex('orders')
+            .where('OrderNumber', orderId)
+            .update({
+                UserName: req.body.customerName,
+                ShipDate: newShipDate
+            });
+
+        // 2. Update the 'order_detail' table (Product details)
+        await knex('order_detail')
+            .where('OrderNumber', orderId)
+            .update({
+                ProductName: req.body.productName,
+                QuotedPrice: req.body.quotedPrice,
+                Quantity: req.body.quantity
+            });
+
+        res.redirect("/orders");
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error updating order.");
+    }
 });
 
 // --- DELETE ORDER ---
-app.post("/deleteOrder/:id", checkAuth, (req, res) => {
-    knex("orders").where("ordernumber", req.params.id).del()
-        .then(() => {
-            res.redirect("/orders");
-        }).catch(err => {
-            console.log(err);
-            res.status(500).send("Error deleting order.");
-        });
+app.post("/deleteOrder/:id", checkAuth, async (req, res) => {
+    try {
+        // Delete details first (optional if your DB has ON DELETE CASCADE)
+        await knex('order_detail').where('OrderNumber', req.params.id).del();
+        
+        // Delete the main order
+        await knex('orders').where('OrderNumber', req.params.id).del();
+        
+        res.redirect("/orders");
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Error deleting order.");
+    }
 });
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
