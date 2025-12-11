@@ -186,4 +186,9 @@ app.post("/deleteOrder/:id", checkAuth, (req, res) => {
         });
 });
 
+// --- About route --
+app.get("/about", (req, res) => {
+    res.render("about", { user: req.session.user });
+});
+
 app.listen(port, () => console.log(`Server running on port ${port}`));
