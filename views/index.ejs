@@ -5,31 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>McMinnville Pallet Co.</title>
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/sandstone/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <!-- Header navbar with links to other pages -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">McMinnville Pallet Co.</a>
-            <div class="d-flex align-items-center">
-                <% if (user) { %>
-                    <span class="navbar-text text-light me-3">Welcome, <%= user %></span>
-                    <a href="/orders" class="btn btn-secondary btn-sm me-2">Admin Dashboard</a>
-                    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-                <% } else { %>
-                    <a class="btn btn-outline-light btn-sm" href="/login">Admin Login</a>
-                <% } %>
-            </div>
-        </div>
-    </nav>
+    <!-- Header -->
+    <%- include('partials/header', { page: 'login' }) %>
 
     <header class="hero-section">
         <div class="container">
             <h1 class="display-4 fw-bold">Reliable Pallets. Local Service.</h1>
             <p class="lead">Serving McMinnville, TN with high-quality recycled pallets.</p>
-            <a href="#contact" class="btn btn-success btn-lg mt-3">Get a Quote</a>
         </div>
     </header>
 
@@ -37,13 +24,25 @@
         
         <div class="row mb-4">
             <div class="col-md-12">
+                
+                <% if (user && user.Level === 'M') { %>
+                    <div class="d-flex justify-content-end mb-3">
+                        <a href="/addProduct" class="btn btn-success">
+                            <i class="fas fa-plus-circle"></i> Add New Product
+                        </a>
+                    </div>
+                <% } %>
                 <h3 class="border-bottom pb-2 mb-4 text-primary">Current Inventory & Pricing</h3>
+                
                 <form action="/" method="GET" class="row g-3 mb-4">
                     <div class="col-md-10">
-                        <input type="text" name="search" class="form-control" placeholder="Search by pallet type...">
+                        <input type="text" name="search" class="form-control" placeholder="Search by pallet type..." value="<%= searchTerm %>">
                     </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-primary w-100">Search</button>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button class="btn btn-primary flex-grow-1">Search</button>
+                        <% if (searchTerm && searchTerm.length > 0) { %>
+                            <a href="/" class="btn btn-secondary flex-shrink-0">Clear</a>
+                        <% } %>
                     </div>
                 </form>
 
@@ -53,22 +52,51 @@
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-4">Product Name</th>
-                                    <th>Material</th>
-                                    <th class="fw-bold text-success">Price</th>
+                                    <th class="text-center">Entry Type</th> 
+                                    <th class="text-center">Heat Treated</th> 
+                                    <th class="fw-bold text-success text-end pe-4">Price</th>
+                                    <% if (user && user.Level === 'M') { %>
+                                        <th class="text-center">Actions</th>
+                                    <% } %>
                                 </tr>
                             </thead>
                             <tbody>
                                 <% if(products.length > 0) { %>
                                     <% products.forEach(p => { %>
                                         <tr>
-                                            <td class="ps-4 fw-bold text-dark"><%= p.productname %></td>
-                                            <td class="text-muted"><%= p.material %></td>
-                                            <td class="fw-bold text-success">$<%= p.price %></td>
+                                            <td class="ps-4 fw-bold text-dark">
+                                                <%= p.ProductName || p.productname %>
+                                            </td>
+                                            
+                                            <td class="text-muted text-center">
+                                                <%= p.Way || p.way %>-Way
+                                            </td>
+                                            
+                                            <td class="text-center">
+                                                <% if((p.HeatTreat || p.heattreat) === 'Y') { %>
+                                                    <span class="badge bg-danger">Yes</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-secondary">No</span>
+                                                <% } %>
+                                            </td>
+                                            
+                                            <td class="fw-bold text-success text-end pe-4">
+                                                $<%= parseFloat(p.Price || p.price).toFixed(2) %>
+                                            </td>
+                                            
+                                            <% if (user && user.Level === 'M') { %>
+                                                <td class="text-center">
+                                                    <a href="/editProduct/<%= p.ProductID || p.productid %>" class="btn btn-sm btn-warning me-2">Edit</a>
+                                                    <form action="/deleteProduct/<%= p.ProductID || p.productid %>" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete <%= p.ProductName || p.productname %>?');">
+                                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    </form>
+                                                </td>
+                                            <% } %>
                                         </tr>
                                     <% }) %>
                                 <% } else { %>
                                     <tr>
-                                        <td colspan="3" class="text-center py-4">No products found matching your search.</td>
+                                        <td colspan="<%= user && user.Level === 'M' ? 5 : 4 %>" class="text-center py-4">No products found matching your search.</td>
                                     </tr>
                                 <% } %>
                             </tbody>
@@ -77,70 +105,9 @@
                 </div>
             </div>
         </div>
-
-        <div id="contact" class="row mt-5 justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow bg-light">
-                    <div class="card-body p-5">
-                        <h3 class="text-center mb-4 text-primary">Request a Quote</h3>
-                        <p class="text-center text-muted mb-4">Fill out the form below and our team will contact you within 24 hours.</p>
-                        
-                        <form action="/contact" method="POST">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Company / Customer Name</label>
-                                    <input type="text" name="customerName" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Service Type</label>
-                                    <select name="requestType" class="form-select">
-                                        <option>Quote Request</option>
-                                        <option>Pickup Request</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Quantity Needed</label>
-                                <input type="number" name="quantity" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 btn-lg">Submit Request</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <footer class="text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <h5>McMinnville Pallet Co.</h5>
-                    <p class="small text-muted">Quality pallets for local businesses.</p>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="/login">Admin Login</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Address and contact info -->
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <p class="small text-muted">
-                        150 N Fair St Morrison, TN 37357<br>
-                        (931) 304-3422
-                    </p>
-                </div>
-            </div>
-            <hr class="border-secondary mt-4">
-            <!-- Footer with copywright -->
-            <p class="small text-muted mb-0">&copy; 2025 McMinnville Pallet Co. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <!-- Footer -->
+    <%- include('partials/footer') %>
 </body>
 </html>

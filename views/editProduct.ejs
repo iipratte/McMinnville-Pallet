@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Edit Product: <%= product.ProductName || product.productname %></h4>
+                </div>
+                <div class="card-body">
+                    <form action="/editProduct/<%= product.ProductID || product.productid %>" method="POST">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Product Name</label>
+                            <input type="text" name="productName" class="form-control" value="<%= product.ProductName || product.productname %>" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Price</label>
+                            <input type="number" name="price" step="0.01" class="form-control" value="<%= product.Price || product.price %>" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Heat Treat (Y/N)</label>
+                            <select name="heatTreat" class="form-select">
+                                <option value="N" <%= (product.HeatTreat || product.heattreat) === 'N' ? 'selected' : '' %>>No</option>
+                                <option value="Y" <%= (product.HeatTreat || product.heattreat) === 'Y' ? 'selected' : '' %>>Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Way (2 or 4)</label>
+                            <input type="number" name="way" class="form-control" min="2" max="4" value="<%= product.Way || product.way %>" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning w-100 mt-3">Update Product</button>
+                        <a href="/" class="btn btn-secondary w-100 mt-2">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
