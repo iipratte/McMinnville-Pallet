@@ -67,14 +67,7 @@
                                     <%= order.status %>
                                 </span>
                             </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <a href="/editOrder/<%= order.id %>" class="btn-edit">Edit</a>
-                                    <form action="/deleteOrder/<%= order.id %>" method="POST" style="display:inline;">
-                                        <button type="submit" class="btn-delete" onclick="return confirm('Delete Order #<%= order.id %>?');">Delete</button>
-                                    </form>
-                                </div>
-                            </td>
+                            
                         </tr>
                         <% }) %>
                     </tbody>
