@@ -10,20 +10,8 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">McMinnville Pallet Co.</a>
-            <div class="d-flex align-items-center">
-                <% if (user) { %>
-                    <span class="navbar-text text-light me-3">Welcome, <%= user.UserName || 'User' %></span> 
-                    <a href="/orders" class="btn btn-secondary btn-sm me-2">Admin Dashboard</a>
-                    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-                <% } else { %>
-                    <a class="btn btn-outline-light btn-sm" href="/login">Admin Login</a>
-                <% } %>
-            </div>
-        </div>
-    </nav>
+    <!-- Header -->
+    <%- include('partials/header', { page: 'login' }) %>
 
     <header class="hero-section">
         <div class="container">
