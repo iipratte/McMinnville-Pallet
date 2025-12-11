@@ -10,24 +10,8 @@
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-    <header>
-        <div class="header-top">
-            <div class="header-contact">
-                <span>📞 (931)304-3422</span>
-                <span>✉️ justincaten@hotmail.com</span>
-            </div>
-        </div>
-        <div class="header-main">
-            <a href="/" class="logo">McMinnville Pallet Co.</a>
-            <nav>
-                <ul>
-                    <li><a href="/">Homepage</a></li>
-                    <li><a href="/login">Login</a></li>
-                    <li><a href="/orders">Orders</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <!-- Header -->
+    <%- include('partials/header', { page: 'about' }) %>
 
     <section class="hero">
         <h1>Quality Pallets & Crating Solutions</h1>
@@ -73,38 +57,7 @@
         </div>
     </section>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>McMinnville Pallet Co.</h3>
-                <p>150 N Fair St <br>Morrison, TN 37357</p>
-                <p>Phone: (931) 304-3422</p>
-                <p>Email: justincaten@hotmail.com</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="/">Homepage</a>
-                <a href="/login">Login</a>
-                <a href="/orders">Orders</a>
-                <a href="/#contact">Request Quote</a>
-            </div>
-            <div class="footer-section">
-                <h3>Services</h3>
-                <a href="#">New Pallets</a>
-                <a href="#">Recycled Pallets</a>
-                <a href="#">Custom Crating</a>
-                <a href="#">Heat Treatment</a>
-                <a href="#">Pallet Repair</a>
-            </div>
-            <div class="footer-section">
-                <h3>Business Hours</h3>
-                <p>Monday - Saturday: 7:00 AM - 5:00 PM</p>
-                <p>Sunday: Closed</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 McMinnville Pallet Co. All rights reserved. | Family Owned & Operated Since 2003</p>
-        </div>
-    </footer>
+    <!-- Footer -->
+    <%- include('partials/footer') %>
 </body>
 </html>
