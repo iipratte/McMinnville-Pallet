@@ -10,26 +10,13 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="/">McMinnville Pallet Co.</a>
-            <div class="d-flex align-items-center">
-                <% if (user) { %>
-                    <span class="navbar-text text-light me-3">Welcome, <%= user.UserName || 'User' %></span> 
-                    <a href="/orders" class="btn btn-secondary btn-sm me-2">Admin Dashboard</a>
-                    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-                <% } else { %>
-                    <a class="btn btn-outline-light btn-sm" href="/login">Admin Login</a>
-                <% } %>
-            </div>
-        </div>
-    </nav>
+    <!-- Header -->
+    <%- include('partials/header', { page: 'login' }) %>
 
     <header class="hero-section">
         <div class="container">
             <h1 class="display-4 fw-bold">Reliable Pallets. Local Service.</h1>
             <p class="lead">Serving McMinnville, TN with high-quality recycled pallets.</p>
-            <a href="#contact" class="btn btn-success btn-lg mt-3">Get a Quote</a>
         </div>
     </header>
 
@@ -118,68 +105,9 @@
                 </div>
             </div>
         </div>
-
-        <div id="contact" class="row mt-5 justify-content-center">
-            <div class="col-lg-8">
-                <div class="card border-0 shadow bg-light">
-                    <div class="card-body p-5">
-                        <h3 class="text-center mb-4 text-primary">Request a Quote</h3>
-                        <p class="text-center text-muted mb-4">Fill out the form below and our team will contact you within 24 hours.</p>
-                        
-                        <form action="/contact" method="POST">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Company / Customer Name</label>
-                                    <input type="text" name="customerName" class="form-control" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-bold">Service Type</label>
-                                    <select name="requestType" class="form-select">
-                                        <option>Quote Request</option>
-                                        <option>Pickup Request</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">Quantity Needed</label>
-                                <input type="number" name="quantity" class="form-control" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 btn-lg">Submit Request</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <footer class="text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <h5>McMinnville Pallet Co.</h5>
-                    <p class="small text-muted">Quality pallets for local businesses.</p>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="/login">Admin Login</a></li>
-                    </ul>
-                </div>
-                
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <p class="small text-muted">
-                        150 N Fair St Morrison, TN 37357<br>
-                        (931) 304-3422
-                    </p>
-                </div>
-            </div>
-            <hr class="border-secondary mt-4">
-            <p class="small text-muted mb-0">&copy; 2025 McMinnville Pallet Co. All Rights Reserved.</p>
-        </div>
-    </footer>
+    <!-- Footer -->
+    <%- include('partials/footer') %>
 </body>
 </html>
